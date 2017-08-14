@@ -87,50 +87,17 @@
             android:layout_marginTop="250dp"
             android:layout_marginBottom="30dp">
 
-            <TextView
-                android:id="@+id/xyzaccel"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:text="X, Y, Z Acceleration"
-                android:textAlignment="center"
-                android:layout_centerHorizontal="true"/>
 
             <com.jjoe64.graphview.GraphView
                 android:id="@+id/xyzgraph"
-                android:layout_below="@+id/xyzaccel"
+                android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"/>
-
-            <TextView
-                android:id="@+id/accelText"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginTop="20dp"
-                android:text="Total Acceleration"
-                android:layout_below="@+id/xyzgraph"
-                android:textAlignment="center"
-                android:layout_centerHorizontal="true"/>
 
             <com.jjoe64.graphview.GraphView
                 android:id="@+id/accelgraph"
                 android:layout_width="match_parent"
-                android:layout_below="@+id/accelText"
-                android:layout_height="250dp"/>
-
-            <TextView
-                android:id="@+id/smoothText"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:layout_marginTop="20dp"
-                android:text="SGolay filtered Acceleration"
-                android:layout_below="@+id/accelgraph"
-                android:textAlignment="center"
-                android:layout_centerHorizontal="true"/>
-
-            <com.jjoe64.graphview.GraphView
-                android:id="@+id/smoothgraph"
-                android:layout_width="match_parent"
-                android:layout_below="@+id/smoothText"
+                android:layout_marginTop="320dp"
                 android:layout_height="250dp"
                 android:layout_marginBottom="30dp"/>
 

@@ -2,7 +2,6 @@ package com.example.papa.acceldataplot;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.hardware.Sensor;
@@ -35,14 +34,9 @@ import org.junit.Test;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
-    private TextView xText, yText, zText, temp;
+    private TextView xText, yText, zText;
     private int i = 0;
-    private Sensor mySensor;
-    private SensorManager SM;
     private Button btnStart, btnStop, btnUpload;
-    private boolean started = false;
-    private ArrayList<AccelData> sensorData;
-    private ArrayList<SGFilter> filtData;
     private LinearLayout layout;
     private SensorManager sensorManager;
     private final String TAG = "GraphSensors";
@@ -50,60 +44,87 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Sensor mSensor;
     private GraphView mGraphAccel;
     private GraphView line_graph;
-    private LineGraphSeries<DataPoint>  mSeriesAccelX, mSeriesAccelY, mSeriesAccelZ, mSeriesAccelTotal;
-    private LineGraphSeries<DataPoint> mSeriesAccelsmooth1, mSeriesAccelsmooth2, mSeriesAccelsmooth3;
-    private double graphLastAccelXValue = 5d;
-    private Double totalaccel, smoothaccel;
+    private LineGraphSeries<DataPoint>  mSeriesAccelX, mSeriesAccelY, mSeriesAccelZ, mSeriesAccelT, mSeriesAccelF;
+    private double graphLastAccelXValue = 10d;
+    private Double totalaccel;
+    private ArrayList<Float> datar = new ArrayList<Float>();
     private float[] data;
-    private ArrayList<Float> datar = new ArrayList<Float>(50);
-
+    private int nl = 20;
+    private int nr = 20;
     private double[] coeffs ;
-    float[] smooth = new float[500];
+    private  SGFilter sgFilter = new SGFilter(nl, nr);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SM = (SensorManager)getSystemService(SENSOR_SERVICE);
-
-        mySensor = SM.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-
-        SM.registerListener(this, mySensor, SensorManager.SENSOR_DELAY_NORMAL);
 
         xText = (TextView)findViewById(R.id.xText);
         yText = (TextView)findViewById(R.id.yText);
         zText = (TextView)findViewById(R.id.zText);
-        temp = (TextView)findViewById(R.id.smoothText);
 
 
         mSeriesAccelX = initSeries(Color.BLUE, "X");
         mSeriesAccelY = initSeries(Color.RED, "Y");
         mSeriesAccelZ = initSeries(Color.GREEN, "Z");
 
-        mGraphAccel = initGraph(R.id.xyzgraph, "Sensor.TYPE_ACCELEROMETER");
+        mGraphAccel = initGraph(R.id.xyzgraph, "X, Y, Z direction Acceleration");
 
         mGraphAccel.addSeries(mSeriesAccelX);
         mGraphAccel.addSeries(mSeriesAccelY);
         mGraphAccel.addSeries(mSeriesAccelZ);
 
-        mSeriesAccelTotal = initSeries(Color.BLUE, "Accel");
+        mSeriesAccelT = initSeries(Color.BLUE, "Taccel");
+        mSeriesAccelF = initSeries(Color.BLACK, "Faccel");
 
-        mGraphAccel = initGraph(R.id.accelgraph, "Sensor.TYPE_ACCELEROMETER");
+        mGraphAccel = initGraph(R.id.accelgraph, "Total and Filtered Acceleration");
+        mGraphAccel.addSeries(mSeriesAccelT);
+        mGraphAccel.addSeries(mSeriesAccelF);
 
-        mGraphAccel.addSeries(mSeriesAccelTotal);
-
-//        mSeriesAccelsmooth1 = initSeries(Color.RED, "FData1");
-//        mSeriesAccelsmooth2 = initSeries(Color.BLACK, "FData2");
-        mSeriesAccelsmooth3 = initSeries(Color.BLUE, "FData3");
-        //mGraphAccel = initGraph(R.id.smoothgraph, "Sensor.TYPE_ACCELEROMETER");
-        //mGraphAccel.addSeries(mSeriesAccelsmooth1);
-        //mGraphAccel.addSeries(mSeriesAccelsmooth2);
-        mGraphAccel.addSeries(mSeriesAccelsmooth3);
-
+        coeffs = SGFilter.computeSGCoefficients(nl, nr, 6);
         startAccel();
     }
 
+    @Override
+    public void onSensorChanged(SensorEvent event) {
 
+        float x,y,z;
+        x = event.values[0];
+        y = event.values[1];
+        z = event.values[2];
+
+        xText.setText("X: " + x);
+        yText.setText("Y: " + y);
+        zText.setText("Z: " + z);
+
+        graphLastAccelXValue += 0.05d;
+
+        mSeriesAccelX.appendData(new DataPoint(graphLastAccelXValue, x), true, 100);
+        mSeriesAccelY.appendData(new DataPoint(graphLastAccelXValue, y), true, 100);
+        mSeriesAccelZ.appendData(new DataPoint(graphLastAccelXValue, z), true, 100);
+
+        totalaccel = Math.sqrt(x * x + y * y + z * z);
+
+        float[] smooth;
+        Float obj = new Float(totalaccel);
+        datar.add(obj);
+        data=new float[datar.size()];
+        for(int j=0;j<datar.size();j++){
+            data[j]=(float)datar.get(j);}
+
+
+
+        if(datar.size()>=(nl + nr + 1)) {
+            smooth = sgFilter.smooth(data, coeffs);
+            datar.remove(0);
+
+            mSeriesAccelT.appendData(new DataPoint(graphLastAccelXValue, data[(int)(nl+nr)/2]), true, 100);
+            mSeriesAccelF.appendData(new DataPoint(graphLastAccelXValue, smooth[(int)(nl+nr)/2]), true,100);
+            String dataString = String.valueOf(event.accuracy) + "," + String.valueOf(event.timestamp) + "," + String.valueOf(event.sensor.getType()) + "\n";
+            Log.d(TAG, "Data received: " + dataString);
+        }
+    }
     public GraphView initGraph(int id, String title) {
         GraphView graph = (GraphView) findViewById(id);
         graph.getViewport().setXAxisBoundsManual(true);
@@ -128,47 +149,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Not in use
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-
-        float x,y,z;
-        x = event.values[0];
-        y = event.values[1];
-        z = event.values[2];
-
-        xText.setText("X: " + x);
-        yText.setText("Y: " + y);
-        zText.setText("Z: " + z);
-
-        graphLastAccelXValue += 0.15d;
-
-        mSeriesAccelX.appendData(new DataPoint(graphLastAccelXValue, x), true, 33);
-        mSeriesAccelY.appendData(new DataPoint(graphLastAccelXValue, y), true, 33);
-        mSeriesAccelZ.appendData(new DataPoint(graphLastAccelXValue, z), true, 33);
-
-        totalaccel = Math.sqrt(x * x + y * y + z * z);
-        mSeriesAccelTotal.appendData(new DataPoint(graphLastAccelXValue, totalaccel) ,true, 33);
-
-        Float obj = new Float(totalaccel);
-        datar.add(obj);
-        data=new float[datar.size()];
-        for(int j=0;j<datar.size();j++){
-            data[j]=(float)datar.get(j);}
-        coeffs = SGFilter.computeSGCoefficients(5, 5, 4);
-        SGFilter sgFilter = new SGFilter(5, 5);
-        smooth = sgFilter.smooth(data, coeffs);
-//        smoothaccel = 1;
-
-       // mSeriesAccelsmooth1.appendData(new DataPoint(graphLastAccelXValue, ((double)smooth[i])),true, 33);
-        // mSeriesAccelsmooth2.appendData(new DataPoint(graphLastAccelXValue, realResult[i%realResult.length]), true, 33);
-
-        mSeriesAccelsmooth3.appendData(new DataPoint(graphLastAccelXValue, smooth[i]*2), true, 33);
-        i++;
-        String dataString = String.valueOf(event.accuracy) + "," + String.valueOf(event.timestamp) + "," + String.valueOf(event.sensor.getType()) + "\n";
-        Log.d(TAG, "Data received: " + dataString);
-    }
-
-
     public LineGraphSeries<DataPoint> initSeries(int color, String title) {
         LineGraphSeries<DataPoint> series;
         series = new LineGraphSeries<>();
@@ -177,23 +157,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         series.setColor(color);
         series.setTitle(title);
         return series;
-    }
-
-    private void assertCoeffsEqual(double[] coeffs, double[] tabularCoeffs) {
-        for (int i = 0; i < tabularCoeffs.length; i++) {
-            assertEquals(tabularCoeffs[i], coeffs[i], 0.001);
-        }
-    }
-
-    private void assertResultsEqual(double[] results, double[] real) {
-        for (int i = 0; i < real.length; i++) {assertEquals(real[i], results[i], 0.001);
-        }
-    }
-
-    private void assertResultsEqual(float[] results, double[] real) {
-        for (int i = 0; i < real.length; i++) {
-            assertEquals(real[i], results[i], 0.1);
-        }
     }
 
 
