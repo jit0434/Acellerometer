@@ -1,11 +1,37 @@
-Android app to read and display real time x,y,z direction acceleration
+#Android app to read and display real time x,y,z direction acceleration
 
-Applied SGFilter to smooth the total acceleration
+#Applied SGFilter to smooth the total acceleration
 
 Screenshot:
 
-![screenshot_20170814-132513](https://user-images.githubusercontent.com/26283082/29263516-caa981c2-80f6-11e7-8575-c4606e829777.jpg)
-![screenshot_20170814-132519](https://user-images.githubusercontent.com/26283082/29263517-cb01a172-80f6-11e7-8719-dd0fcdf7a400.jpg)
-![screenshot_20170814-132525](https://user-images.githubusercontent.com/26283082/29263518-cb2ceca6-80f6-11e7-8ffe-149616e5c5d7.jpg)
-![screenshot_20170814-132528](https://user-images.githubusercontent.com/26283082/29263519-cb2ff4fa-80f6-11e7-9634-3ee7f0327524.jpg)
+Main Screen with Start Button, Stop Button, Save Button and Real time values of X, Y and Z axis acceleration values.
+
+![screenshot_20170814-211606](https://user-images.githubusercontent.com/26283082/29279932-04d49932-8137-11e7-8aeb-b1cfd870b492.jpg)
+
+Screen with real time auto scaled graph plotting of X, Y, Z assis acceleration.
+
+![screenshot_20170814-211612](https://user-images.githubusercontent.com/26283082/29279927-04bf732c-8137-11e7-8339-096b0870aeea.jpg)
+
+Screens with real time auto scaled plotting of total accelration (i.e. accel_Total = sqrt(x^2 + y^2 + z^2)) and savitzky-golay filtered data.
+
+
+![screenshot_20170814-211615](https://user-images.githubusercontent.com/26283082/29279928-04c9db78-8137-11e7-84e2-83f769d15892.jpg)
+
+
+![screenshot_20170814-211641](https://user-images.githubusercontent.com/26283082/29279929-04cd5a3c-8137-11e7-9134-ed190faa3d6f.jpg)
+
+
+![screenshot_20170814-211643](https://user-images.githubusercontent.com/26283082/29279931-04d461e2-8137-11e7-894d-78b2d101362b.jpg)
+
+
+![screenshot_20170814-211654](https://user-images.githubusercontent.com/26283082/29279930-04d07884-8137-11e7-946d-d59ba18e3efe.jpg)
+
+
+
+Refrence:
+  savitzky-golay filter : https://github.com/swallez/savitzky-golay-filter
+  
+  Accelerometer sensor data reading and Autoscaled Graph plotting using graphview : https://github.com/chris-piekarski/android-graph-sensors
+
+
 
