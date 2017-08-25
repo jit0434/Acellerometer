@@ -10,7 +10,7 @@
 
 ![screenshot_20170814-211606](https://user-images.githubusercontent.com/26283082/29279932-04d49932-8137-11e7-8aeb-b1cfd870b492.jpg)
 
-## Screen with real time auto scaled graph plotting of X, Y, Z assis acceleration.
+## Screen with real time auto scaled graph plotting of X, Y, Z axis acceleration.
 
 
 ![screenshot_20170814-211612](https://user-images.githubusercontent.com/26283082/29279927-04bf732c-8137-11e7-8339-096b0870aeea.jpg)
