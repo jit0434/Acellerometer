@@ -6,7 +6,7 @@
 
 # Screenshot:
 
-## Main Screen with Start Button, Stop Button, Save Button and Real time values of X, Y and Z axis acceleration values.
+## Main Screen with Start Button, Stop Button, Save Button and Real time values of X, Y and Z axis acceleration.
 
 ![screenshot_20170814-211606](https://user-images.githubusercontent.com/26283082/29279932-04d49932-8137-11e7-8aeb-b1cfd870b492.jpg)
 
