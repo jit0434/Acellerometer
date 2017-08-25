@@ -31,7 +31,7 @@
 
 
 
-# Refrence:
+# Reference:
   savitzky-golay filter : https://github.com/swallez/savitzky-golay-filter
   
   Accelerometer sensor data reading and Autoscaled Graph plotting using graphview : https://github.com/chris-piekarski/android-graph-sensors
